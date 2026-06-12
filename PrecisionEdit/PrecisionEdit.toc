@@ -5,6 +5,7 @@
 ## Version: 1.0.0
 ## IconTexture: Interface\AddOns\PrecisionEdit\Media\Icon
 ## X-Support: Midnight
+## X-Curse-Project-ID: 1572816
 ## SavedVariables: PrecisionEditDB
 ## OptionalDeps: Blizzard_EditMode
 ## X-Category: Plugins
