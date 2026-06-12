@@ -1,0 +1,21 @@
+## Interface: 120005, 120007
+## Title: |cfff2b134PrecisionEdit|r
+## Notes: Pixel-precise control for Blizzard Edit Mode - nudge, type exact coordinates, center and reset. |n|n|cff5C8BCFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Author: Josh "|CFF7b8489Kkthnx|r" Russell
+## Version: 1.0.0
+## IconTexture: Interface\AddOns\PrecisionEdit\Media\Icon
+## X-Support: Midnight
+## SavedVariables: PrecisionEditDB
+## OptionalDeps: Blizzard_EditMode
+## X-Category: Plugins
+
+Core\Engine.lua
+Core\Constants.lua
+Core\API.lua
+Core\Database.lua
+Core\Locales\enUS.lua
+Core\Commands.lua
+
+Modules\EditMode\Core.lua
+Modules\EditMode\Position.lua
+Modules\EditMode\Panel.lua
