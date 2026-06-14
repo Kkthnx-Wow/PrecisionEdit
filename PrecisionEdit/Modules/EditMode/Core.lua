@@ -23,8 +23,10 @@ local IsShiftKeyDown = IsShiftKeyDown
 local CreateFrame = CreateFrame
 local EventRegistry = EventRegistry
 local rawget = rawget
+local pcall = pcall
 local tonumber = tonumber
 local floor, max, min = math.floor, math.max, math.min
+local UNKNOWN = rawget(_G, "UNKNOWN") or "Unknown"
 
 ns:RegisterDefaults({
 	panel = {
@@ -40,8 +42,14 @@ ns:RegisterDefaults({
 local Mod = ns:NewModule("EditMode", "editMode")
 ns.EditMode = Mod
 
--- Currently selected system frame (an EditModeSystemMixin frame), or nil.
+-- Currently selected frame (a Blizzard EditModeSystemMixin frame, or a
+-- LibEditMode-registered frame), or nil. `targetKind` records which family the
+-- selection belongs to so the positioning code knows how to persist a move:
+--   "blizzard" -> Blizzard's OnSystemPositionChange path
+--   "lib"      -> LibEditMode's own move/callback path (see LibEditMode.lua)
 Mod.selected = nil
+Mod.targetKind = nil
+Mod.libSelection = nil -- the LibEditMode selection overlay for a "lib" target
 Mod.active = false
 
 --- The Shift-modifier step size, clamped to something sane.
@@ -68,6 +76,51 @@ end
 -- ---------------------------------------------------------------------------
 -- Selection
 -- ---------------------------------------------------------------------------
+--- Bring the panel up for the current selection. `isNew` re-opens a panel the
+--- user manually closed (a fresh selection), but a mere refresh of the same
+--- target leaves a user-closed panel closed.
+function Mod:ActivatePanel(isNew)
+	if isNew then
+		self.userHidden = false
+	end
+	self:EnsurePanel()
+	self:ShowPanel()
+	self:RefreshPanel()
+	self:UpdateAnchorGuide()
+	self:SetKeyboardEnabled(true)
+end
+
+--- Tear the panel down (no selection).
+function Mod:DeactivatePanel()
+	self:SetKeyboardEnabled(false)
+	self:HideAnchorGuide()
+	self:HidePanel()
+end
+
+--- The display name of the current target. LibEditMode keeps the system name on
+--- the selection overlay rather than the frame itself, so check there first.
+function Mod:GetTargetName()
+	if self.targetKind == "lib" and self.libSelection then
+		local system = self.libSelection.system
+		if system and system.GetSystemName then
+			local ok, name = pcall(system.GetSystemName, system)
+			if ok and name then
+				return name
+			end
+		end
+	end
+
+	local frame = self.selected
+	if frame and frame.GetSystemName then
+		local ok, name = pcall(frame.GetSystemName, frame)
+		if ok and name then
+			return name
+		end
+	end
+	return UNKNOWN
+end
+
+--- Select (or clear) a Blizzard Edit Mode system frame.
 function Mod:SetSelected(frame)
 	-- Edit Mode passes frames through secureexecuterange; only accept a real
 	-- movable system frame so the panel never targets a stale/odd object.
@@ -75,19 +128,14 @@ function Mod:SetSelected(frame)
 		frame = nil
 	end
 
+	self.targetKind = frame and "blizzard" or nil
+	self.libSelection = nil
 	self.selected = frame
 
 	if frame then
-		self.userHidden = false -- a fresh selection re-opens a manually-closed panel
-		self:EnsurePanel()
-		self:ShowPanel()
-		self:RefreshPanel()
-		self:UpdateAnchorGuide()
-		self:SetKeyboardEnabled(true)
+		self:ActivatePanel(true)
 	else
-		self:SetKeyboardEnabled(false)
-		self:HideAnchorGuide()
-		self:HidePanel()
+		self:DeactivatePanel()
 	end
 
 	ns:TriggerCallback("Selection.Changed", frame)
@@ -161,7 +209,13 @@ function Mod:TryInstall()
 
 	if manager.ClearSelectedSystem then
 		hooksecurefunc(manager, "ClearSelectedSystem", function()
-			Mod:SetSelected(nil)
+			-- LibEditMode clears the Blizzard selection (taint avoidance) right
+			-- before it selects one of its own frames; ignoring that case keeps
+			-- the panel from flickering during a Blizzard -> lib hand-off. A lib
+			-- target is torn down via the lib dialog's OnHide instead.
+			if Mod.targetKind ~= "lib" then
+				Mod:SetSelected(nil)
+			end
 		end)
 	end
 
@@ -188,6 +242,13 @@ function Mod:TryInstall()
 end
 
 function Mod:OnEnable()
+	-- Pick up frames registered through LibEditMode (if any addon embeds it), so
+	-- the panel works for third-party Edit Mode frames too. Safe to call when the
+	-- library is absent.
+	if self.InstallLibEditMode then
+		self:InstallLibEditMode()
+	end
+
 	if self:TryInstall() then
 		return
 	end

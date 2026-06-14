@@ -13,11 +13,9 @@ local C, F, L = ns.C, ns.F, ns.L
 local Mod = ns.EditMode
 
 local CreateFrame = CreateFrame
-local rawget = rawget
 local tonumber, tostring = tonumber, tostring
 local IsShiftKeyDown = IsShiftKeyDown
 local pcall = pcall
-local UNKNOWN = rawget(_G, "UNKNOWN") or "Unknown"
 
 -- ---------------------------------------------------------------------------
 -- Small widget helpers
@@ -372,8 +370,7 @@ function Mod:RefreshPanel(force)
 		return
 	end
 
-	local frame = self.selected
-	f.systemName:SetText(frame.GetSystemName and frame:GetSystemName() or UNKNOWN)
+	f.systemName:SetText(self:GetTargetName())
 
 	local point, relPoint, relName, storedX, storedY = self:GetAnchorInfo()
 	if not point then

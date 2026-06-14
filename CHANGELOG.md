@@ -2,6 +2,22 @@
 
 ---
 
+## [1.1.0] — 2026-06-13
+
+### Added
+
+- **LibEditMode support:** the precision panel now appears for frames that other
+  addons register with [LibEditMode](https://github.com/p3lim-wow/LibEditMode),
+  not just Blizzard's own systems. Selecting such a frame in Edit Mode brings up
+  the same panel — type exact coordinates, nudge, snap, center and reset — and
+  moves save through the owning addon's own callback so they persist in that
+  addon's layout. The library is detected automatically through LibStub; if no
+  installed addon embeds it, nothing changes. The anchor point is kept fixed
+  (rather than re-normalised) so typed coordinates stay exact, matching how
+  PrecisionEdit treats Blizzard frames.
+
+---
+
 ## [0.1.0] — 2026-06-12
 
 Initial release. Adds a precision panel to Blizzard's Edit Mode for pixel-level

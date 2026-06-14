@@ -91,14 +91,19 @@ function Mod:ApplyLiveOffsetDelta(dxLocal, dyLocal)
 		return false
 	end
 
+	local isLib = self.targetKind == "lib"
+
 	-- Match Blizzard's drag-start path for managed/default-position frames and
 	-- snapped frames; otherwise precise moves can be pulled back by the frame
-	-- manager or leave stale snap links behind.
-	if frame.isManagedFrame and frame.IsInDefaultPosition and frame:IsInDefaultPosition() and frame.BreakFromFrameManager then
-		frame:BreakFromFrameManager()
-	end
-	if frame.ClearFrameSnap then
-		frame:ClearFrameSnap()
+	-- manager or leave stale snap links behind. LibEditMode frames are plain
+	-- frames with none of this machinery, so we skip it for them.
+	if not isLib then
+		if frame.isManagedFrame and frame.IsInDefaultPosition and frame:IsInDefaultPosition() and frame.BreakFromFrameManager then
+			frame:BreakFromFrameManager()
+		end
+		if frame.ClearFrameSnap then
+			frame:ClearFrameSnap()
+		end
 	end
 
 	local numPoints = frame:GetNumPoints()
@@ -117,9 +122,15 @@ function Mod:ApplyLiveOffsetDelta(dxLocal, dyLocal)
 		frame:SetPoint(p[1], p[2], p[3], p[4], p[5])
 	end
 
-	local manager = Manager()
-	if manager and manager.OnSystemPositionChange then
-		manager:OnSystemPositionChange(frame)
+	-- Persist through the owning system's save path. We keep the anchor point
+	-- fixed (above) for both families, so coordinates stay exact and stable.
+	if isLib then
+		self:PersistLibMove(frame)
+	else
+		local manager = Manager()
+		if manager and manager.OnSystemPositionChange then
+			manager:OnSystemPositionChange(frame)
+		end
 	end
 	return true
 end
@@ -232,7 +243,15 @@ end
 --- Reset the selected system to its layout default position.
 function Mod:ResetSelectedPosition()
 	local frame = Movable()
-	if not frame or not frame.ResetToDefaultPosition then
+	if not frame then
+		return false
+	end
+
+	if self.targetKind == "lib" then
+		return self:ResetLibPosition(frame)
+	end
+
+	if not frame.ResetToDefaultPosition then
 		return false
 	end
 	frame:ResetToDefaultPosition()
