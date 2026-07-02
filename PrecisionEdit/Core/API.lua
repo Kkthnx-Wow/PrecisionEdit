@@ -56,6 +56,15 @@ function F.Clamp(value, lower, upper)
 	return max(lower, min(upper, value))
 end
 
+--- Format a stored offset for display (normalises negative zero to "0").
+function F.FormatOffset(value)
+	local n = F.Round(value)
+	if n == 0 then
+		return "0"
+	end
+	return tostring(n)
+end
+
 -- ---------------------------------------------------------------------------
 -- Midnight secret-value guards (12.0)
 --   Frame geometry (GetPoint/GetCenter) can become secret once secret anchors

@@ -19,6 +19,7 @@ travel with your layout import/export strings. Nothing lives in a parallel syste
 * **Refine, don't replace** — it drives Blizzard's Edit Mode, it doesn't reimplement it.
 * **Pixel-precise** — at a pixel-perfect UI scale, one unit equals one screen pixel.
 * **Native feel** — the panel matches Blizzard's Edit Mode dialogs, with a close button and a help (ℹ) button.
+* **Works with addon frames** — frames other addons add to Edit Mode through **LibEditMode** get the same precision panel, with moves saved into the owning addon's layout.
 * **Lightweight** — fully event-driven (no polling), combat-safe, and Midnight secret-value hardened.
 
 ---
@@ -49,7 +50,9 @@ There's nothing to configure to get started — open Edit Mode and select a fram
 
 Open Edit Mode (Game Menu → Edit Mode), click any movable frame, and the
 PrecisionEdit panel appears. It hides automatically when you deselect a frame or
-leave Edit Mode.
+leave Edit Mode. This works for Blizzard's own systems and for frames that other
+addons register through **LibEditMode** — no setup required; the library is
+detected automatically.
 
 ---
 

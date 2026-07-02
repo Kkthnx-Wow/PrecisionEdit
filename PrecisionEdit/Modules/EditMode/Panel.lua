@@ -115,6 +115,7 @@ local function ShowHelp(self)
 	GameTooltip:AddLine(L["HELP_NUDGE"], 0.82, 0.82, 0.82, true)
 	GameTooltip:AddLine(L["HELP_SNAP"], 0.82, 0.82, 0.82, true)
 	GameTooltip:AddLine(L["HELP_RESET"], 0.82, 0.82, 0.82, true)
+	GameTooltip:AddLine(L["HELP_ANCHOR"], 0.82, 0.82, 0.82, true)
 	GameTooltip:Show()
 end
 
@@ -170,6 +171,7 @@ function Mod:EnsurePanel()
 	close:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
 	close:SetScript("OnClick", function()
 		Mod.userHidden = true
+		Mod:HideAnchorGuide()
 		Mod:HidePanel()
 	end)
 
@@ -347,6 +349,7 @@ function Mod:ShowPanel()
 	end
 	if self.panel then
 		self.panel:Show()
+		self:SetKeyboardEnabled(true)
 	end
 end
 
@@ -354,6 +357,7 @@ function Mod:HidePanel()
 	if self.panel then
 		self.panel:Hide()
 	end
+	self:SetKeyboardEnabled(false)
 end
 
 --- Whether either coordinate box currently has keyboard focus.
@@ -384,8 +388,8 @@ function Mod:RefreshPanel(force)
 
 	f.anchor:SetText(L["Anchor: %s to %s of %s"]:format(point, relPoint, relName))
 	if force or not self:IsEditing() then
-		f.inputX:SetText(tostring(F.Round(storedX)))
-		f.inputY:SetText(tostring(F.Round(storedY)))
+		f.inputX:SetText(F.FormatOffset(storedX))
+		f.inputY:SetText(F.FormatOffset(storedY))
 		f.stepInput:SetText(tostring(self:GetBigStep()))
 	end
 end
@@ -434,7 +438,7 @@ function Mod:HideAnchorGuide()
 end
 
 function Mod:UpdateAnchorGuide()
-	if not (ns.db.panel.showAnchorGuide and self.selected) then
+	if not (ns.db.panel.showAnchorGuide and self.selected and not self.userHidden) then
 		self:HideAnchorGuide()
 		return
 	end

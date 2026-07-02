@@ -42,6 +42,7 @@ local function Movable()
 		return nil
 	end
 	if frame.CanBeMoved and not frame:CanBeMoved() then
+		F.Print(L["Cannot move this frame while it is locked."])
 		return nil
 	end
 	if frame:GetNumPoints() == 0 then

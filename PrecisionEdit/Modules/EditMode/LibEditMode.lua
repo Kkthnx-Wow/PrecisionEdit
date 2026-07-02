@@ -181,12 +181,12 @@ end
 
 function Mod:InstallLibEditMode()
 	if self.libInstalled then
-		return
+		return true
 	end
 
 	local lib = FindLib()
 	if not lib then
-		return
+		return false
 	end
 
 	self.lib = lib
@@ -201,4 +201,5 @@ function Mod:InstallLibEditMode()
 			Mod:HookLibDialog()
 		end)
 	end
+	return true
 end

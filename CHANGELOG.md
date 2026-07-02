@@ -2,6 +2,35 @@
 
 ---
 
+## [1.2.0] — 2026-06-30
+
+### Fixed
+
+- **Panel close:** closing the precision panel with the X now also hides the anchor
+  guide and disables arrow-key nudging until you select a frame again (or open the
+  panel on a fresh selection). The guide no longer reappears on lib-frame dialog
+  refreshes while the panel stays closed.
+- **LibEditMode late load:** if an addon embedding LibEditMode loads after
+  PrecisionEdit at login, the library is now picked up via an `ADDON_LOADED`
+  retry instead of being missed for the whole session.
+- **Arrow-key double nudge:** the key catcher only runs while the precision panel
+  is visible, and sits above Edit Mode dialogs so arrow keys are handled once —
+  avoiding duplicate moves from Blizzard's or LibEditMode's own keyboard handlers.
+
+### Changed
+
+- **Locked frames:** attempting to move a locked Edit Mode system now prints a
+  clear chat message instead of failing silently.
+- **Coordinate display:** negative-zero offsets (e.g. cast bar X ≈ 0) show as `0`
+  instead of `-0`.
+
+### Added
+
+- **Help — anchor offsets:** the help tooltip explains that X and Y are offsets
+  from the frame's anchor point, not absolute screen pixels.
+
+---
+
 ## [1.1.0] — 2026-06-13
 
 ### Added

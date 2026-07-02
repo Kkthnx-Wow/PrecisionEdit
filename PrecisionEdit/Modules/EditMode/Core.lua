@@ -86,8 +86,13 @@ function Mod:ActivatePanel(isNew)
 	self:EnsurePanel()
 	self:ShowPanel()
 	self:RefreshPanel()
-	self:UpdateAnchorGuide()
-	self:SetKeyboardEnabled(true)
+	if self.userHidden then
+		self:HideAnchorGuide()
+		self:SetKeyboardEnabled(false)
+	else
+		self:UpdateAnchorGuide()
+		self:SetKeyboardEnabled(true)
+	end
 end
 
 --- Tear the panel down (no selection).
@@ -151,7 +156,12 @@ end
 local function OnKeyDown(self, key)
 	self:SetPropagateKeyboardInput(true)
 
-	if not Mod.selected or (Mod.IsEditing and Mod:IsEditing()) then
+	-- Only nudge while our panel is open; Blizzard and LibEditMode dialogs bind
+	-- the same arrow keys, so staying hidden avoids double moves.
+	if not Mod.selected or Mod.userHidden or not Mod.panel or not Mod.panel:IsShown() then
+		return
+	end
+	if Mod.IsEditing and Mod:IsEditing() then
 		return
 	end
 
@@ -175,18 +185,28 @@ local function OnKeyDown(self, key)
 end
 
 function Mod:SetKeyboardEnabled(enabled)
+	local shouldEnable = enabled
+		and self.selected
+		and not self.userHidden
+		and self.panel
+		and self.panel:IsShown()
+
 	if not self.keyCatcher then
-		if not enabled then
+		if not shouldEnable then
 			return
 		end
 		local catcher = CreateFrame("Frame", nil, UIParent)
+		-- Above Edit Mode dialogs so we receive arrow keys first and can stop
+		-- them propagating to Blizzard / LibEditMode handlers (double nudge).
+		catcher:SetFrameStrata("FULLSCREEN_DIALOG")
+		catcher:SetFrameLevel(5000)
 		catcher:Hide()
 		catcher:SetScript("OnKeyDown", OnKeyDown)
 		self.keyCatcher = catcher
 	end
 
-	self.keyCatcher:EnableKeyboard(enabled)
-	self.keyCatcher:SetShown(enabled)
+	self.keyCatcher:EnableKeyboard(shouldEnable)
+	self.keyCatcher:SetShown(shouldEnable)
 end
 
 -- ---------------------------------------------------------------------------
@@ -249,13 +269,30 @@ function Mod:OnEnable()
 		self:InstallLibEditMode()
 	end
 
+	if not self.libInstalled and self.InstallLibEditMode then
+		local onAddonLoadedLib
+		onAddonLoadedLib = function()
+			if Mod.libInstalled then
+				ns:UnregisterEvent("ADDON_LOADED", onAddonLoadedLib)
+				return
+			end
+			Mod:InstallLibEditMode()
+			if Mod.libInstalled then
+				ns:UnregisterEvent("ADDON_LOADED", onAddonLoadedLib)
+			end
+		end
+		ns:RegisterEvent("ADDON_LOADED", onAddonLoadedLib)
+	end
+
 	if self:TryInstall() then
 		return
 	end
 	-- Blizzard_EditMode hasn't loaded yet; install as soon as it does.
-	ns:RegisterEvent("ADDON_LOADED", function(_, loadedAddon)
-		if loadedAddon == "Blizzard_EditMode" then
-			Mod:TryInstall()
+	local onAddonLoadedBlizzard
+	onAddonLoadedBlizzard = function(_, loadedAddon)
+		if loadedAddon == "Blizzard_EditMode" and Mod:TryInstall() then
+			ns:UnregisterEvent("ADDON_LOADED", onAddonLoadedBlizzard)
 		end
-	end)
+	end
+	ns:RegisterEvent("ADDON_LOADED", onAddonLoadedBlizzard)
 end

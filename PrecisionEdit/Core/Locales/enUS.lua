@@ -48,9 +48,11 @@ L["HELP_TYPE"] = "- Type an exact X or Y offset and press Enter."
 L["HELP_NUDGE"] = "- Arrow keys or the d-pad nudge by 1; hold Shift for the Step amount."
 L["HELP_SNAP"] = "- Center or Snap the frame to a screen edge."
 L["HELP_RESET"] = "- Reset returns it to the layout's default position."
+L["HELP_ANCHOR"] = "- X and Y are offsets from the anchor point shown above (not screen pixels); different anchors are not directly comparable."
 
 -- Messages
 L["Cannot move a frame during combat."] = "Cannot move a frame during combat."
+L["Cannot move this frame while it is locked."] = "Cannot move this frame while it is locked."
 L["Enter Edit Mode, then select a frame to position it precisely."] = "Enter Edit Mode, then select a frame to position it precisely."
 L["Panel position reset."] = "Panel position reset."
 
