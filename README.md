@@ -1,116 +1,46 @@
 # PrecisionEdit
 
-**A focused companion for Blizzard's Edit Mode — it refines, it doesn't replace.**
+[![Last commit](https://img.shields.io/github/last-commit/Kkthnx-Wow/PrecisionEdit)](https://github.com/Kkthnx-Wow/PrecisionEdit/commits/main)
+[![Release](https://img.shields.io/github/v/release/Kkthnx-Wow/PrecisionEdit?label=release)](https://github.com/Kkthnx-Wow/PrecisionEdit/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
----
+PrecisionEdit adds pixel-level positioning control to Blizzard's Edit Mode.
 
-## Overview
+## What it does
 
-**PrecisionEdit** adds pixel-level control to World of Warcraft's built-in Edit
-Mode. Dragging frames around is quick but coarse; there's no way to type an exact
-position, move by a single pixel, or snap a frame cleanly to a screen edge.
-PrecisionEdit fills that gap with a small panel that appears the moment you select
-a frame in Edit Mode.
+- Shows a small panel whenever you select a frame in Edit Mode, for exact X/Y positioning.
+- Nudges frames one pixel at a time (or by a custom step with Shift), snaps them to screen edges, and centers them.
+- Writes through Blizzard's own position path, so changes save into your Edit Mode layout and travel with import and export strings.
+- Works with frames that other addons register through LibEditMode.
+- Stays lightweight and combat-safe.
 
-Everything is written back through Blizzard's own position-change path — the exact
-code a normal drag uses — so your changes save into the active Edit Mode layout and
-travel with your layout import/export strings. Nothing lives in a parallel system.
+## Get it
 
-* **Refine, don't replace** — it drives Blizzard's Edit Mode, it doesn't reimplement it.
-* **Pixel-precise** — at a pixel-perfect UI scale, one unit equals one screen pixel.
-* **Native feel** — the panel matches Blizzard's Edit Mode dialogs, with a close button and a help (ℹ) button.
-* **Works with addon frames** — frames other addons add to Edit Mode through **LibEditMode** get the same precision panel, with moves saved into the owning addon's layout.
-* **Lightweight** — fully event-driven (no polling), combat-safe, and Midnight secret-value hardened.
+Install from CurseForge (search "PrecisionEdit"), or download the zip from the [Releases page](https://github.com/Kkthnx-Wow/PrecisionEdit/releases).
 
----
+## Quick start
 
-## Installation
+1. Install PrecisionEdit and restart WoW (or `/reload`).
+2. Open Edit Mode from the Game Menu.
+3. Click any movable frame. The PrecisionEdit panel appears.
+4. Type exact coordinates, use the nudge d-pad, or snap the frame to an edge.
+5. Optional: `/pe lock` pins the panel in place.
 
-**Via an addon manager (recommended)**
+## Support the work
 
-* CurseForge — search for **PrecisionEdit** and install.
+Free forever. If it saved you time, chip in:
 
-**Manual**
+- [Ko-fi](https://ko-fi.com/kkthnx)
+- [Buy Me a Coffee](https://buymeacoffee.com/kkthnx)
+- [PayPal](https://www.paypal.com/paypalme/kkthnxtv)
 
-1. Download the latest release from the Releases page.
-2. Extract the `PrecisionEdit` folder into `World of Warcraft\_retail_\Interface\AddOns`.
-3. Restart the game (or `/reload` if already in-game).
+Every bit goes back into building more.
 
-There's nothing to configure to get started — open Edit Mode and select a frame.
+## Community
 
----
-
-## Getting Started
-
-| Command                | Description                          |
-| ---------------------- | ------------------------------------ |
-| /pe or /precisionedit  | Show help in chat                    |
-| /pe reset              | Reset the panel's own position       |
-| /pe lock               | Lock / unlock the panel              |
-
-Open Edit Mode (Game Menu → Edit Mode), click any movable frame, and the
-PrecisionEdit panel appears. It hides automatically when you deselect a frame or
-leave Edit Mode. This works for Blizzard's own systems and for frames that other
-addons register through **LibEditMode** — no setup required; the library is
-detected automatically.
-
----
-
-## Features
-
-### Positioning
-
-* **Exact Coordinates** — type an absolute X / Y offset and press Enter; multi-point frames (like action bars) move rigidly.
-* **Nudge** — a d-pad or the arrow keys move the frame one unit at a time; hold **Shift** to move by a configurable Step.
-* **Snap to Edge** — kiss the selected frame to the left, right, top or bottom of the screen, scale-correct across mismatched frame scales.
-* **Center** — center on the X axis, Y axis, or both.
-* **Reset** — return the frame to its layout's default position.
-
-### Panel
-
-* **Anchor Guide** — an optional on-screen crosshair marking the selected frame's anchor point, so you can see exactly what you're moving relative to.
-* **Live Readout** — the panel shows the system name and live anchor, updating for your nudges *and* normal Blizzard drags.
-* **Movable & Lockable** — drag the panel anywhere; `/pe lock` keeps it put.
-
----
-
-## Configuration
-
-There's no separate options window — the panel itself holds the controls. Set the
-**Step** (Shift-nudge distance) and toggle the **anchor guide** right on the panel.
-Settings are stored account-wide; frame *positions* live in your Edit Mode layout,
-not here. Frame movement is unavailable during combat (Edit Mode is too), so
-PrecisionEdit defers gracefully and tells you why.
-
----
-
-## Contributing
-
-Contributions, bug reports and ideas are welcome! Open an issue or a pull request.
-When filing a bug, including your client version and a `/reload`-able repro helps a ton.
-
----
-
-## Credits
-
-PrecisionEdit was inspired by **PixelPerfectEditMode** and built on the lessons of
-**NexEnhance**. Thanks to the wider WoW addon community — and to Blizzard, for an
-Edit Mode worth building on.
-
----
-
-## Support
-
-Appreciate the work? Consider showing your support:
-
-* **PayPal** — paypal.me/KkthnxTV
-* **Patreon** — patreon.com/Kkthnx
-* **Ko-fi** — ko-fi.com/kkthnx
-
----
+- Glitch Haven Discord: https://discord.gg/FaVGhTYmck
+- Website: https://kkthnx.com
 
 ## License
 
-Released under the **MIT License**. See LICENSE for details.
-
-Developed and maintained by **Josh "Kkthnx" Russell**. Built with love for the default UI.
+MIT License. See LICENSE for details.
